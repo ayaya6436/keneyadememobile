@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:keneyadememobile/pages/annonce.dart';
+import 'package:keneyadememobile/pages/calendrier.dart';
+import 'package:keneyadememobile/pages/cas.dart';
+import 'package:keneyadememobile/pages/epidemie.dart';
+import 'package:keneyadememobile/pages/forum.dart';
+import 'package:keneyadememobile/pages/maldie.dart';
+import 'package:keneyadememobile/pages/prevention.dart';
+import 'package:keneyadememobile/pages/traitement.dart';
+import 'package:keneyadememobile/pages/zone.dart';
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
@@ -15,14 +24,53 @@ class _DashboardState extends State<Dashboard> {
     {"id": 2, "image_path": 'assets/images/slide1.png'},
   ];
 
+   List imgCard =[
+     "assets/images/maladie.png",
+     "assets/images/epidemie.png",
+     "assets/images/prevention.png",
+     "assets/images/traitement.png",
+     "assets/images/zone.png",
+     "assets/images/calendrier.png",
+     "assets/images/megaphone.png",
+     "assets/images/zoneDanger.png",
+     "assets/images/forum.png",
+   ];
+
+
+   List cardTitles=[
+     "Maladies",
+     "Epidemies",
+     "Preventions",
+     "Traitements",
+     "Zones",
+     "Calendrier",
+     "Annonces",
+     "Signaler Cas",
+     "Forum",
+   ];
+
+
+   List<Widget> listRoute = [
+     Maladie(),
+     Epidemie(),
+     Prevention(),
+     Traitement(),
+     Zone(),
+     Calendrier(),
+     Annonce(),
+     Cas(),
+     Forum()
+
+   ];
     final CarouselController carouselController = CarouselController();
   int currentIndex = 0;
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Column(
         children: [
-          SizedBox(height: 30),
+          SizedBox(height: 52),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -36,9 +84,9 @@ class _DashboardState extends State<Dashboard> {
               ),
             ],
           ),
-          SizedBox(height: 15),
+          SizedBox(height: 2),
           Padding(
-            padding: const EdgeInsets.all(8.0), // Ajuste la marge selon tes besoins
+            padding: const EdgeInsets.all(5.0), // Ajuste la marge selon tes besoins
             child: Stack(
               children: [
                 InkWell(
@@ -101,8 +149,53 @@ class _DashboardState extends State<Dashboard> {
               ],
             ),
           ),
+         GridView.builder(
+           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+             crossAxisCount: 3,
+             childAspectRatio: 1.1,
+             crossAxisSpacing: 0,
+           ),
+           shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+           itemCount: imgCard.length,
+           itemBuilder: (context,index){
+             return InkWell(
+               onTap: (){
+                 Navigator.push(context,MaterialPageRoute(builder: (context)=>listRoute[index]));
+               },
+               child: Container(
+                 margin: EdgeInsets.all(10),
+                 decoration: BoxDecoration(
+                   borderRadius: BorderRadius.circular(10),
+                   color: Colors.white,
+                   boxShadow: [
+                     BoxShadow(
+                       color: Colors.black26,
+                       spreadRadius: 1,
+                       blurRadius: 2
+                     )
+                   ]
+                 ),
+                 child: Column(
+                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                   children:[
+                     Image.asset(imgCard[index],
+                     width: 60,),
+                     Text(cardTitles[index],
+                       style: TextStyle(
+                         fontSize: 16,
+                         fontWeight: FontWeight.bold
+                       )
+                     ),
+                   ]
+                 ),
+               ),
+             );
+           },
+          )
         ],
       ),
+
     );
   }
 }
