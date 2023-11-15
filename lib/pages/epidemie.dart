@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Epidemie extends StatefulWidget {
   @override
@@ -8,7 +10,39 @@ class Epidemie extends StatefulWidget {
   }
 }
 
+String searchTerm = "";
+//filter
+List<Map<String, dynamic>> filteredEpidemieList = [];
+//list epidemie
+List<Map<String, dynamic>> epidemiesList = [];
+int index = 0;
+Map<String, dynamic> mapResponse = {};
+
 class EpidemieState extends State<Epidemie> {
+
+  Future<void> getEpidemie() async {
+    http.Response response;
+    try {
+      response = await http.get(Uri.parse("http://10.0.2.2:8080/keneya/epidemies"));
+      if (response.statusCode == 200) {
+        setState(() {
+          epidemiesList = List<Map<String, dynamic>>.from(json.decode(response.body));
+          mapResponse = epidemiesList[index];
+          filteredEpidemieList = List<Map<String, dynamic>>.from(epidemiesList);
+        });
+      }
+    } catch (e) {
+      print("Erreur lors de la récupération des données : $e");
+    }
+
+  }
+
+  @override
+  void initState() {
+    getEpidemie();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -46,11 +80,32 @@ class EpidemieState extends State<Epidemie> {
           ],
         ),
         SizedBox(height: 30),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            onChanged: (value) {
+              setState(() {
+                var searchTerm = value.toLowerCase();
+                filteredEpidemieList = epidemiesList.where((maladie) {
+                  return maladie['nom'].toLowerCase().contains(searchTerm);
+                }).toList();
+              });
+            },
+
+            decoration: InputDecoration(
+              labelText: "Rechercher",
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
 
           Expanded(
             child: ListView.builder(
-            itemCount:3,
-                itemBuilder:(context,index){
+                itemCount: filteredEpidemieList.length,
+                itemBuilder: (context, index) {
+                  mapResponse = filteredEpidemieList[index];
+                  mapResponse = epidemiesList[index];
          return  Container(
            margin: EdgeInsets.symmetric(vertical: 10,horizontal: 24),
            decoration: BoxDecoration(
@@ -78,7 +133,7 @@ class EpidemieState extends State<Epidemie> {
                    // mainAxisAlignment: MainAxisAlignment.spaceAround,
                    children: [
                      Text(
-                       "Nom Epidemie",
+                       mapResponse['nom'].toString(),
                        style: TextStyle(
                          fontSize: 20,
                          fontWeight: FontWeight.bold,
@@ -96,13 +151,14 @@ class EpidemieState extends State<Epidemie> {
                    mainAxisAlignment: MainAxisAlignment.start,
                    children: [
 
-                     Text("Status :",
+                     Text(
+                       "Status :",
                        style: TextStyle(
                          fontSize: 18,
                          fontWeight: FontWeight.bold,
                        ),),
                      SizedBox(width: 10),
-                     Text("En cours" ,style: TextStyle(
+                     Text( mapResponse['status'].toString(),style: TextStyle(
                          fontSize: 18,
                          fontWeight: FontWeight.bold,
                          color:Colors.red
@@ -120,7 +176,7 @@ class EpidemieState extends State<Epidemie> {
                          fontWeight: FontWeight.bold,
                        ),),
                      SizedBox(width: 10),
-                     Text("Forte" ,style: TextStyle(
+                     Text( mapResponse['gravite'].toString() ,style: TextStyle(
                          fontSize: 18,
                          fontWeight: FontWeight.bold,
                          color:Colors.red
@@ -139,7 +195,7 @@ class EpidemieState extends State<Epidemie> {
                          fontWeight: FontWeight.bold,
                        ),),
                      SizedBox(width: 10),
-                     Text("1234" ,style: TextStyle(
+                     Text( mapResponse['victimes'].toString(),style: TextStyle(
                          fontSize: 18,
                          fontWeight: FontWeight.bold,
                          color:Colors.red
