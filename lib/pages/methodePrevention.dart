@@ -1,75 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 
-class Maladie extends StatefulWidget {
+class MethodePrevention extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    return MaladieState();
+    // TODO: implement createState
+    return MethodePreventionState();
   }
 }
 
-List<Map<String, dynamic>> filteredMaladiesList = [];
+//filter
+List<Map<String, dynamic>> filteredMethodesList = [];
+//plier deplier
 List<bool> isExpandedList = [];
-List<Map<String, dynamic>> maladiesList = [];
+//list maladie
+List<Map<String, dynamic>> methodeList = [];
 int index = 0;
 Map<String, dynamic> mapResponse = {};
 
-class MaladieState extends State<Maladie> {
+class MethodePreventionState extends State<MethodePrevention>{
   AudioPlayer audioPlayer = AudioPlayer();
+  List imageList = [
+    {"id": 1, "image_path": 'assets/images/prevention1.jpg'},
+    {"id": 2, "image_path": 'assets/images/slide1.png'},
+  ];
+  final CarouselController carouselController = CarouselController();
+  int currentIndex = 0;
 
-
-
-  Future<void> getMaladie() async {
+  Future<void> getMethode() async {
     http.Response response;
     try {
-      response = await http.get(Uri.parse("http://10.0.2.2:8080/keneya/maladies"));
+      response = await http.get(Uri.parse("http://10.0.2.2:8080/keneya/preventions"));
       if (response.statusCode == 200) {
-        print(response.toString());
         setState(() {
-          maladiesList = List<Map<String, dynamic>>.from(json.decode(response.body));
-          mapResponse = maladiesList[index];
+          methodeList =
+          List<Map<String, dynamic>>.from(json.decode(response.body));
+          mapResponse = methodeList[index];
+          isExpandedList = List.generate(methodeList.length, (index) => false);
 
-          isExpandedList = List.generate(maladiesList.length, (index) => false);
-          filteredMaladiesList = List<Map<String, dynamic>>.from(maladiesList);
+          filteredMethodesList = List<Map<String, dynamic>>.from(methodeList);
         });
-
       }
     } catch (e) {
       print("Erreur lors de la récupération des données : $e");
     }
   }
-  //
-  // Future<void> playAudio(String audioUrl) async {
-  //   await audioPlayer.play(UrlSource(audioUrl));
-  //
-  // }
 
   Future<void> playAudio(String audioUrl) async {
-    try {
-      await audioPlayer.play(UrlSource(audioUrl));
-
-    } catch (e) {
-      print("Erreur lors de la configuration de l'URL audio : $e");
-      return;
-    }
-
-    try {
-      await audioPlayer.play(UrlSource(audioUrl));
-    } catch (e) {
-      print("Erreur lors de la lecture de l'audio : $e");
-    }
+    await audioPlayer.play(audioUrl as Source);
   }
 
   @override
   void initState() {
-    getMaladie();
+    getMethode();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    // TODO: implement build
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -80,38 +72,91 @@ class MaladieState extends State<Maladie> {
           size: 40,
         ),
       ),
+
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 0.0),
-                child: Image.asset(
-                  "assets/images/maladie.png",
-                  width: 188,
-                  height: 169,
+          Padding(
+            padding: const EdgeInsets.all(5.0), // Ajuste la marge selon tes besoins
+            child: Stack(
+              children: [
+                InkWell(
+                  onTap: () {
+                    print(currentIndex);
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15), // Ajuste selon tes besoins
+                    child: CarouselSlider(
+                      items: imageList
+                          .map(
+                            (item) => Image.asset(
+                          item['image_path'],
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      )
+                          .toList(),
+                      carouselController: carouselController,
+                      options: CarouselOptions(
+                        scrollPhysics: const BouncingScrollPhysics(),
+                        autoPlay: true,
+                        aspectRatio: 2,
+                        viewportFraction: 1,
+                        onPageChanged: (index, reason) {
+                          setState(() {
+                            currentIndex = index;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ],
+                Positioned(
+                  bottom: 10,
+                  left: 0,
+                  right: 0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: imageList.asMap().entries.map((entry) {
+                      return GestureDetector(
+                        onTap: () => carouselController.animateToPage(entry.key),
+                        child: Container(
+                          width: currentIndex == entry.key ? 17 : 7,
+                          height: 7.0,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 3.0,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: currentIndex == entry.key
+                                ? Colors.red
+                                : Colors.teal,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Maladies",
+                "Methodes de preventions",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               )
             ],
           ),
+          SizedBox(height: 30),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               onChanged: (value) {
                 setState(() {
                   var searchTerm = value.toLowerCase();
-                  filteredMaladiesList = maladiesList.where((maladie) {
-                    return maladie['nom'].toLowerCase().contains(searchTerm);
+                  filteredMethodesList = methodeList.where((methode) {
+                    return methode['nom'].toLowerCase().contains(searchTerm);
                   }).toList();
                 });
               },
@@ -122,11 +167,13 @@ class MaladieState extends State<Maladie> {
               ),
             ),
           ),
+
           Expanded(
             child: ListView.builder(
-              itemCount: filteredMaladiesList.length,
+              itemCount: filteredMethodesList.length,
               itemBuilder: (context, index) {
-                mapResponse = filteredMaladiesList[index];
+                mapResponse = filteredMethodesList[index];
+                mapResponse = methodeList[index];
                 String audioUrl = mapResponse['audio'];
                 bool isExpanded = isExpandedList[index];
                 return Container(
@@ -197,4 +244,5 @@ class MaladieState extends State<Maladie> {
       ),
     );
   }
+  
 }
