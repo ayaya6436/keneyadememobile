@@ -18,6 +18,8 @@ Map<String, dynamic> mapResponse = {};
 
 class MaladieState extends State<Maladie> {
   AudioPlayer audioPlayer = AudioPlayer();
+  bool isPlaying = false;
+  bool isLoading = true; //variable pour indiquer si les données sont en cours de chargement
 
 
 
@@ -30,9 +32,9 @@ class MaladieState extends State<Maladie> {
         setState(() {
           maladiesList = List<Map<String, dynamic>>.from(json.decode(response.body));
           mapResponse = maladiesList[index];
-
           isExpandedList = List.generate(maladiesList.length, (index) => false);
           filteredMaladiesList = List<Map<String, dynamic>>.from(maladiesList);
+          isLoading = false; // Mettez isLoading à false car les données ont été chargées
         });
 
       }
@@ -40,25 +42,25 @@ class MaladieState extends State<Maladie> {
       print("Erreur lors de la récupération des données : $e");
     }
   }
-  //
-  // Future<void> playAudio(String audioUrl) async {
-  //   await audioPlayer.play(UrlSource(audioUrl));
-  //
-  // }
 
   Future<void> playAudio(String audioUrl) async {
-    try {
-      await audioPlayer.play(UrlSource(audioUrl));
-
-    } catch (e) {
-      print("Erreur lors de la configuration de l'URL audio : $e");
-      return;
-    }
-
-    try {
-      await audioPlayer.play(UrlSource(audioUrl));
-    } catch (e) {
-      print("Erreur lors de la lecture de l'audio : $e");
+    if (isPlaying) {
+      // Si l'audio est en train de jouer, arrêtez-le
+      await audioPlayer.stop();
+      setState(() {
+        isPlaying = false;
+      });
+    } else {
+      try {
+        // Si l'audio ne joue pas, commencez à le jouer
+        await audioPlayer.play(UrlSource(audioUrl));
+        setState(() {
+          isPlaying = true;
+        });
+      } catch (e) {
+        print("Erreur lors de la configuration de l'URL audio : $e");
+        return;
+      }
     }
   }
 
@@ -122,7 +124,10 @@ class MaladieState extends State<Maladie> {
               ),
             ),
           ),
-          Expanded(
+          SizedBox(height: 7),
+          isLoading
+              ? CircularProgressIndicator() // Indicateur de chargement pendant le chargement des données
+              : Expanded(
             child: ListView.builder(
               itemCount: filteredMaladiesList.length,
               itemBuilder: (context, index) {
