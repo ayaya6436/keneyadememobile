@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:audioplayers/audioplayers.dart';
+
 
 class Epidemie extends StatefulWidget {
   @override
@@ -20,6 +22,12 @@ Map<String, dynamic> mapResponse = {};
 
 class EpidemieState extends State<Epidemie> {
 
+  AudioPlayer audioPlayer = AudioPlayer();
+  bool isPlaying = false;
+  bool isLoading = true; //variable pour indiquer si les données sont en cours de chargement
+
+
+
   Future<void> getEpidemie() async {
     http.Response response;
     try {
@@ -29,12 +37,35 @@ class EpidemieState extends State<Epidemie> {
           epidemiesList = List<Map<String, dynamic>>.from(json.decode(response.body));
           mapResponse = epidemiesList[index];
           filteredEpidemieList = List<Map<String, dynamic>>.from(epidemiesList);
+          isLoading = false; // Mettez isLoading à false car les données ont été chargées
+
         });
       }
     } catch (e) {
       print("Erreur lors de la récupération des données : $e");
     }
 
+  }
+
+  Future<void> playAudio(String audioUrl) async {
+    if (isPlaying) {
+      // Si l'audio est en train de jouer, arrêtez-le
+      await audioPlayer.stop();
+      setState(() {
+        isPlaying = false;
+      });
+    } else {
+      try {
+        // Si l'audio ne joue pas, commencez à le jouer
+        await audioPlayer.play(UrlSource(audioUrl));
+        setState(() {
+          isPlaying = true;
+        });
+      } catch (e) {
+        print("Erreur lors de la configuration de l'URL audio : $e");
+        return;
+      }
+    }
   }
 
   @override
@@ -99,12 +130,14 @@ class EpidemieState extends State<Epidemie> {
             ),
           ),
         ),
-
-          Expanded(
+        isLoading
+            ? CircularProgressIndicator() // Indicateur de chargement pendant le chargement des données
+            : Expanded(
             child: ListView.builder(
                 itemCount: filteredEpidemieList.length,
                 itemBuilder: (context, index) {
                   mapResponse = filteredEpidemieList[index];
+                  String audioUrl = mapResponse['audio'];
                   mapResponse = epidemiesList[index];
          return  Container(
            margin: EdgeInsets.symmetric(vertical: 10,horizontal: 24),
@@ -140,11 +173,10 @@ class EpidemieState extends State<Epidemie> {
                        ),
                      ),
                      IconButton(
-                         onPressed: () {},
-                         icon: Icon(
-                           Icons.play_circle,
-                           color: Colors.blue,
-                         )),
+                     onPressed: () {
+                     playAudio(audioUrl);
+                     },
+                     icon: Icon(Icons.play_circle, color: Colors.blue)),
                    ],
                  ),
                  Row(

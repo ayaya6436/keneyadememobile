@@ -4,15 +4,15 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 
-class MethodePrevention extends StatefulWidget {
+class MethodeTraitement extends StatefulWidget{
   final int maladieId;
 
-  MethodePrevention({required this.maladieId});
-
+  MethodeTraitement({required this.maladieId});
   @override
   State<StatefulWidget> createState() {
-    return MethodePreventionState(maladieId: maladieId);
+    return MethodeTraitementState(maladieId: maladieId);
   }
+  
 }
 
 
@@ -25,26 +25,20 @@ List<Map<String, dynamic>> methodeList = [];
 int index = 0;
 Map<String, dynamic> mapResponse = {};
 
-class MethodePreventionState extends State<MethodePrevention>{
+class MethodeTraitementState extends State<MethodeTraitement>{
   int maladieId;
 
-  MethodePreventionState({required this.maladieId});
+  MethodeTraitementState({required this.maladieId});
+
   bool isLoading = true;
   AudioPlayer audioPlayer = AudioPlayer();
   bool isPlaying = false;
-
-  List imageList = [
-    {"id": 1, "image_path": 'assets/images/prevention1.jpg'},
-    {"id": 2, "image_path": 'assets/images/slide1.png'},
-  ];
-  final CarouselController carouselController = CarouselController();
-  int currentIndex = 0;
 
   Future<void> getMethode(int maladieId) async {
     http.Response response;
 
     try {
-      response = await http.get(Uri.parse("http://10.0.2.2:8080/keneya/preventions/maladie/$maladieId"));
+      response = await http.get(Uri.parse("http://10.0.2.2:8080/keneya/traitements/maladie/$maladieId"));
       if (response.statusCode == 200) {
         setState(() {
           methodeList = List<Map<String, dynamic>>.from(json.decode(response.body));
@@ -85,6 +79,15 @@ class MethodePreventionState extends State<MethodePrevention>{
     getMethode(widget.maladieId);
     super.initState();
   }
+
+
+
+  List imageList = [
+    {"id": 1, "image_path": 'assets/images/prevention1.jpg'},
+    {"id": 2, "image_path": 'assets/images/slide1.png'},
+  ];
+  final CarouselController carouselController = CarouselController();
+  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -271,5 +274,5 @@ class MethodePreventionState extends State<MethodePrevention>{
       ),
     );
   }
-
+  
 }
