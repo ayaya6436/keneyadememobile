@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class Zone extends StatefulWidget{
+class Zone extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return ZoneState();
   }
-  
 }
-class ZoneState extends State<Zone>{
+
+class ZoneState extends State<Zone> {
+
+  static const CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(12.6312102,-8.0327274),
+    zoom: 14.4746,
+  );
+
+  GoogleMapController? myMapsController;
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -21,8 +28,19 @@ class ZoneState extends State<Zone>{
           size: 40,
         ),
       ),
-      body: Text("Zone"),
+      body: Stack(
+        children: [
+          GoogleMap(
+            zoomControlsEnabled: false,
+            onMapCreated: (GoogleMapController controller) {
+              myMapsController = controller;
+              // myMapsController!.setMapStyle(_mapStyle);
+            }, initialCameraPosition: _kGooglePlex,
+          ),
+
+
+        ],
+    ),
     );
   }
-  
 }
