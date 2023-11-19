@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Zone extends StatefulWidget {
   @override
@@ -9,6 +9,13 @@ class Zone extends StatefulWidget {
 }
 
 class ZoneState extends State<Zone> {
+  late GoogleMapController mapController;
+
+  final LatLng _center = const LatLng(-33.86, 151.20);
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +28,13 @@ class ZoneState extends State<Zone> {
           size: 40,
         ),
       ),
-      body:Column (
-      )
+      body: GoogleMap(
+        onMapCreated: _onMapCreated,
+        initialCameraPosition: CameraPosition(
+          target: _center,
+          zoom: 11.0,
+        ),
+      ),
     );
   }
 }

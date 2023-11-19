@@ -19,6 +19,7 @@ dependencies:
   table_calendar: ^3.0.9
   appinio_video_player: ^1.2.2
   video_player: ^2.8.1
+  google_maps_flutter: ^2.5.0
 
 
   
