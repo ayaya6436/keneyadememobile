@@ -18,7 +18,7 @@ class splash extends StatelessWidget {
       ), 
       nextScreen: Dashboard(),
       splashIconSize: 200,
-      duration:3000,
+      duration:1000,
       splashTransition: SplashTransition.sizeTransition,
       animationDuration: const Duration(seconds: 1),
       

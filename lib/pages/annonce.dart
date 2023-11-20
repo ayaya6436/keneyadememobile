@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
 
 class Video {
   final String titre;
@@ -18,43 +19,61 @@ class Annonce extends StatefulWidget {
 }
 
 class AnnonceState extends State<Annonce> {
-  late CustomVideoPlayerController _customVideoPlayerController;
   List<Video> videos = [];
+  late List<ChewieController> _chewieControllers;
 
   @override
   void initState() {
     super.initState();
+    _chewieControllers = [];
     fetchVideos().then((fetchedVideos) {
       setState(() {
         videos = fetchedVideos;
+        _initializeChewieControllers();
       });
     });
-    initializeVideoPlayer();
-
   }
 
   Future<List<Video>> fetchVideos() async {
-    final response = await http.get(Uri.parse("http://10.0.2.2:8080/keneya/annonces"));
+    final response =
+    await http.get(Uri.parse("http://10.0.2.2:8080/keneya/annonces"));
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((videoData) => Video(
-        titre: videoData['titre'],
-        image: videoData['image'],
-      )).toList();
+      final List<dynamic> jsonResponse = json.decode(response.body);
+
+      List<Video> fetchedVideos = jsonResponse.map((data) {
+        return Video(titre: data['titre'], image: data['image']);
+      }).toList();
+
+      return fetchedVideos;
     } else {
       throw Exception('Failed to load videos');
     }
   }
 
+  void _initializeChewieControllers() {
+    _chewieControllers = videos.map((video) {
+      return ChewieController(
+        videoPlayerController: VideoPlayerController.network(video.image),
+        aspectRatio: 16 / 9,
+        autoPlay: false,
+        looping: false,
+      );
+    }).toList();
+  }
 
-  void initializeVideoPlayer() {
-    _customVideoPlayerController = CustomVideoPlayerController();
+  @override
+  void dispose() {
+    for (var controller in _chewieControllers) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
@@ -84,19 +103,57 @@ class AnnonceState extends State<Annonce> {
               Text(
                 "Annonces",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              )
+              ),
             ],
           ),
-          SizedBox(height: 30),
           Expanded(
             child: ListView.builder(
               itemCount: videos.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(videos[index].titre),
-                  onTap: () {
-                    _customVideoPlayerController.play(videos[index].image);
-                  },
+              itemBuilder: (BuildContext context, int index) {
+                return Column(
+                  children: [
+                    ListTile(
+                      title: Text(videos[index].titre),
+                      onTap: () {
+                        // Pause toutes les vidéos avant de changer de vidéo
+                        for (var i = 0; i < _chewieControllers.length; i++) {
+                          if (i != index) {
+                            _chewieControllers[i].pause();
+                          }
+                        }
+                        // Jouer ou mettre en pause la vidéo actuelle
+                        _chewieControllers[index].videoPlayerController.value.isPlaying
+                            ? _chewieControllers[index].pause()
+                            : _chewieControllers[index].play();
+                      },
+                    ),
+                    Container(
+                      margin:
+                      EdgeInsets.symmetric(vertical: 10, horizontal: 24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 7,
+                            offset: Offset(0, 0),
+                          ),
+                        ],
+                      ),
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      child: Chewie(
+                        controller: _chewieControllers[index],
+                      ),
+                    ),
+                    Divider(),
+                  ],
                 );
               },
             ),
@@ -104,21 +161,5 @@ class AnnonceState extends State<Annonce> {
         ],
       ),
     );
-  }
-}
-class CustomVideoPlayerController {
-  late VideoPlayerController _videoPlayerController;
-
-  CustomVideoPlayerController();
-
-  void play(String videoUrl) async {
-    _videoPlayerController = VideoPlayerController.network(videoUrl);
-
-    await _videoPlayerController.initialize();
-    _videoPlayerController.play();
-  }
-
-  void dispose() {
-    _videoPlayerController.dispose();
   }
 }
