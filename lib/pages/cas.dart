@@ -6,7 +6,7 @@ class Cas extends StatefulWidget{
     // TODO: implement createState
     return CasState();
   }
-  
+
 }
 class CasState extends State<Cas>{
   @override
@@ -21,8 +21,10 @@ class CasState extends State<Cas>{
           size: 40,
         ),
       ),
-      body: Text("Cas"),
+      body: Column(
+
+      ),
     );
   }
-  
+
 }
