@@ -66,7 +66,7 @@ class TraitementState extends State<Traitement>{
               Padding(
                 padding: const EdgeInsets.only(left: 0.0),
                 child: Image.asset(
-                  "assets/images/prevention.png",
+                  "assets/images/traitement.png",
                   width: 188,
                   height: 169,
                 ),
@@ -77,7 +77,7 @@ class TraitementState extends State<Traitement>{
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Preventions",
+                "Traitements",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               )
             ],
@@ -131,8 +131,24 @@ class TraitementState extends State<Traitement>{
                       ],
                     ),
                     padding: EdgeInsets.all(10),
-                    child: Column(
+                    child: Row(
+
                       children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10), // ou ajustez selon vos besoins
+                          child: Container(
+                            width: 50.0,
+                            height: 50.0,
+                            color: Colors.grey, // couleur de fond du conteneur
+                            child: Image.network(
+                              "http://10.0.2.2/" + mapResponse['image'],
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover, // assure que l'image couvre complètement le conteneur
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10,),
                         Text(
                           mapResponse['nom'].toString(),
                           style: TextStyle(

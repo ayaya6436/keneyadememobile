@@ -68,6 +68,9 @@ class MethodePreventionState extends State<MethodePrevention>{
       });
     } else {
       try {
+        // Ajoutez 10.0.2.2 à l'URL audio
+        audioUrl = "http://10.0.2.2/" + audioUrl;
+
         // Si l'audio ne joue pas, commencez à le jouer
         await audioPlayer.play(UrlSource(audioUrl));
         setState(() {
@@ -79,7 +82,6 @@ class MethodePreventionState extends State<MethodePrevention>{
       }
     }
   }
-
   @override
   void initState() {
     getMethode(widget.maladieId);
@@ -111,12 +113,12 @@ class MethodePreventionState extends State<MethodePrevention>{
                     print(currentIndex);
                   },
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15), // Ajuste selon tes besoins
+                    borderRadius: BorderRadius.circular(15),
                     child: CarouselSlider(
-                      items: imageList
+                      items: methodeList
                           .map(
-                            (item) => Image.asset(
-                          item['image_path'],
+                            (item) => Image.network(
+                          "http://10.0.2.2/" + item['image'], // Utilisez le chemin de l'image de chaque méthode
                           fit: BoxFit.cover,
                           width: double.infinity,
                         ),
@@ -137,6 +139,7 @@ class MethodePreventionState extends State<MethodePrevention>{
                     ),
                   ),
                 ),
+
                 Positioned(
                   bottom: 10,
                   left: 0,

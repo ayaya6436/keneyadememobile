@@ -42,7 +42,9 @@ class AnnonceState extends State<Annonce> {
       final List<dynamic> jsonResponse = json.decode(response.body);
 
       List<Video> fetchedVideos = jsonResponse.map((data) {
-        return Video(titre: data['titre'], image: data['image']);
+        return Video(titre: data['titre'],
+          image: "http://10.0.2.2/" + data['image'],
+        );
       }).toList();
 
       return fetchedVideos;

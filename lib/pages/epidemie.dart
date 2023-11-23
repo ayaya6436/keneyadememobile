@@ -56,6 +56,9 @@ class EpidemieState extends State<Epidemie> {
       });
     } else {
       try {
+        // Ajoutez 10.0.2.2 à l'URL audio
+        audioUrl = "http://10.0.2.2/" + audioUrl;
+
         // Si l'audio ne joue pas, commencez à le jouer
         await audioPlayer.play(UrlSource(audioUrl));
         setState(() {

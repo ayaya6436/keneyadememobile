@@ -114,12 +114,12 @@ class MethodeTraitementState extends State<MethodeTraitement>{
                     print(currentIndex);
                   },
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15), // Ajuste selon tes besoins
+                    borderRadius: BorderRadius.circular(15),
                     child: CarouselSlider(
-                      items: imageList
+                      items: methodeList
                           .map(
-                            (item) => Image.asset(
-                          item['image_path'],
+                            (item) => Image.network(
+                          "http://10.0.2.2/" + item['image'], // Utilisez le chemin de l'image de chaque méthode
                           fit: BoxFit.cover,
                           width: double.infinity,
                         ),

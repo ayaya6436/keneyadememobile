@@ -19,9 +19,31 @@ Map<String, dynamic> mapResponse = {};
 class MaladieState extends State<Maladie> {
   AudioPlayer audioPlayer = AudioPlayer();
   bool isPlaying = false;
-  bool isLoading = true; //variable pour indiquer si les données sont en cours de chargement
+  bool isLoading = true;
 
+  Future<void> playAudio(String audioUrl) async {
+    if (isPlaying) {
+      // Si l'audio est en train de jouer, arrêtez-le
+      await audioPlayer.stop();
+      setState(() {
+        isPlaying = false;
+      });
+    } else {
+      try {
+        // Ajoutez 10.0.2.2 à l'URL audio
+        audioUrl = "http://10.0.2.2/" + audioUrl;
 
+        // Si l'audio ne joue pas, commencez à le jouer
+        await audioPlayer.play(UrlSource(audioUrl));
+        setState(() {
+          isPlaying = true;
+        });
+      } catch (e) {
+        print("Erreur lors de la configuration de l'URL audio : $e");
+        return;
+      }
+    }
+  }
 
   Future<void> getMaladie() async {
     http.Response response;
@@ -34,33 +56,11 @@ class MaladieState extends State<Maladie> {
           mapResponse = maladiesList[index];
           isExpandedList = List.generate(maladiesList.length, (index) => false);
           filteredMaladiesList = List<Map<String, dynamic>>.from(maladiesList);
-          isLoading = false; // Mettez isLoading à false car les données ont été chargées
+          isLoading = false;
         });
-
       }
     } catch (e) {
       print("Erreur lors de la récupération des données : $e");
-    }
-  }
-
-  Future<void> playAudio(String audioUrl) async {
-    if (isPlaying) {
-      // Si l'audio est en train de jouer, arrêtez-le
-      await audioPlayer.stop();
-      setState(() {
-        isPlaying = false;
-      });
-    } else {
-      try {
-        // Si l'audio ne joue pas, commencez à le jouer
-        await audioPlayer.play(UrlSource(audioUrl));
-        setState(() {
-          isPlaying = true;
-        });
-      } catch (e) {
-        print("Erreur lors de la configuration de l'URL audio : $e");
-        return;
-      }
     }
   }
 
@@ -103,7 +103,7 @@ class MaladieState extends State<Maladie> {
               Text(
                 "Maladies",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              )
+              ),
             ],
           ),
           Padding(
@@ -126,7 +126,7 @@ class MaladieState extends State<Maladie> {
           ),
           SizedBox(height: 7),
           isLoading
-              ? CircularProgressIndicator() // Indicateur de chargement pendant le chargement des données
+              ? CircularProgressIndicator()
               : Expanded(
             child: ListView.builder(
               itemCount: filteredMaladiesList.length,
@@ -138,12 +138,7 @@ class MaladieState extends State<Maladie> {
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 24),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10),
-                    ),
+                    borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.5),
@@ -163,12 +158,19 @@ class MaladieState extends State<Maladie> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      // Afficher l'image à partir de l'URL
+                      Image.network(
+                        "http://10.0.2.2/" + mapResponse['image'],
+                        width: 100,
+                        height: 100,
+                      ),
                       IconButton(
                         onPressed: () {
                           playAudio(audioUrl);
                         },
-                        icon: Icon(Icons.play_circle, color: Colors.blue),
+                        icon: Icon(Icons.play_circle, color: Colors.blue,size: 60,),
                       ),
+                      SizedBox(height: 40,),
                       Text(
                         mapResponse['description'].toString(),
                         maxLines: isExpanded ? null : 3,

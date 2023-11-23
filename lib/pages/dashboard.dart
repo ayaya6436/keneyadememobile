@@ -68,6 +68,8 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+      backgroundColor: Colors.white,
+
       body: Column(
         children: [
           SizedBox(height: 52),
