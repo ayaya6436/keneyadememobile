@@ -150,26 +150,41 @@ class MaladieState extends State<Maladie> {
                   ),
                   padding: EdgeInsets.all(20),
                   child: Column(
+
                     children: [
-                      Text(
-                        mapResponse['nom'].toString(),
-                        style: TextStyle(
-                          fontSize: 19,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Container(
+                              width: 50.0,
+                              height: 50.0,
+                              color: Colors.grey,
+                              child: Image.network(
+                                "http://10.0.2.2/" + mapResponse['image'],
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            mapResponse['nom'].toString(),
+                            style: TextStyle(
+                              fontSize: 19,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              playAudio(audioUrl);
+                            },
+                            icon: Icon(Icons.play_circle, color: Colors.blue,size: 30,),
+                          ),
+                        ],
                       ),
-                      // Afficher l'image à partir de l'URL
-                      Image.network(
-                        "http://10.0.2.2/" + mapResponse['image'],
-                        width: 100,
-                        height: 100,
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          playAudio(audioUrl);
-                        },
-                        icon: Icon(Icons.play_circle, color: Colors.blue,size: 60,),
-                      ),
+
                       SizedBox(height: 40,),
                       Text(
                         mapResponse['description'].toString(),

@@ -194,7 +194,14 @@ class _DashboardState extends State<Dashboard> {
                ),
              );
            },
-          )
+          ),
+          SizedBox(height: 20,),
+          Text(" Pour la prevention et le traitement des maladies \n "
+              "        Veuillez consulter l'application FuraTali", style: TextStyle(fontWeight: FontWeight.bold
+
+          ),),
+
+
         ],
       ),
 

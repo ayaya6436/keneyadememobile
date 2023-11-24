@@ -145,7 +145,7 @@ class AnnonceState extends State<Annonce> {
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 2,
                             blurRadius: 7,
-                            offset: Offset(0, 0),
+                            offset: Offset(0, 6),
                           ),
                         ],
                       ),
