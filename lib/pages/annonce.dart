@@ -112,50 +112,46 @@ class AnnonceState extends State<Annonce> {
             child: ListView.builder(
               itemCount: videos.length,
               itemBuilder: (BuildContext context, int index) {
-                return Column(
-                  children: [
-                    ListTile(
-                      title: Text(videos[index].titre),
-                      onTap: () {
-                        // Pause toutes les vidéos avant de changer de vidéo
-                        for (var i = 0; i < _chewieControllers.length; i++) {
-                          if (i != index) {
-                            _chewieControllers[i].pause();
+                return Container(
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        blurRadius: 2,
+                        offset: Offset(0, 0),
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        title: Text(videos[index].titre),
+                        onTap: () {
+                          // Pause toutes les vidéos avant de changer de vidéo
+                          for (var i = 0; i < _chewieControllers.length; i++) {
+                            if (i != index) {
+                              _chewieControllers[i].pause();
+                            }
                           }
-                        }
-                        // Jouer ou mettre en pause la vidéo actuelle
-                        _chewieControllers[index].videoPlayerController.value.isPlaying
-                            ? _chewieControllers[index].pause()
-                            : _chewieControllers[index].play();
-                      },
-                    ),
-                    Container(
-                      margin:
-                      EdgeInsets.symmetric(vertical: 10, horizontal: 24),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
-                          bottomLeft: Radius.circular(10),
-                          bottomRight: Radius.circular(10),
+                          // Jouer ou mettre en pause la vidéo actuelle
+                          _chewieControllers[index].videoPlayerController.value.isPlaying
+                              ? _chewieControllers[index].pause()
+                              : _chewieControllers[index].play();
+                        },
+                      ),
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.25,
+                        child: Chewie(
+                          controller: _chewieControllers[index],
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 7,
-                            offset: Offset(0, 6),
-                          ),
-                        ],
                       ),
-                      height: MediaQuery.of(context).size.height * 0.25,
-                      child: Chewie(
-                        controller: _chewieControllers[index],
-                      ),
-                    ),
-                    Divider(),
-                  ],
+                      Divider(),
+                    ],
+                  ),
                 );
               },
             ),
