@@ -34,7 +34,7 @@ class EpidemieState extends State<Epidemie> {
       response = await http.get(Uri.parse("http://10.0.2.2:8080/keneya/epidemies"));
       if (response.statusCode == 200) {
         setState(() {
-          epidemiesList = List<Map<String, dynamic>>.from(json.decode(response.body));
+          epidemiesList = List<Map<String, dynamic>>.from(jsonDecode(utf8.decode(response.bodyBytes)));
           mapResponse = epidemiesList[index];
           filteredEpidemieList = List<Map<String, dynamic>>.from(epidemiesList);
           isLoading = false; // Mettez isLoading à false car les données ont été chargées

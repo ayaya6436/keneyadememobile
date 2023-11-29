@@ -26,7 +26,7 @@ class TraitementState extends State<Traitement>{
       response = await http.get(Uri.parse("http://10.0.2.2:8080/keneya/maladies"));
       if (response.statusCode == 200) {
         setState(() {
-          maladiesList = List<Map<String, dynamic>>.from(json.decode(response.body));
+          maladiesList = List<Map<String, dynamic>>.from(jsonDecode(utf8.decode(response.bodyBytes)));
           filteredMaladiesList = List<Map<String, dynamic>>.from(maladiesList);
           isLoading = false;
           // Mettez à jour la liste des routes avec les instances de MethodePrevention

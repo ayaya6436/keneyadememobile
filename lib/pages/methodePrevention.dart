@@ -47,7 +47,7 @@ class MethodePreventionState extends State<MethodePrevention>{
       response = await http.get(Uri.parse("http://10.0.2.2:8080/keneya/preventions/maladie/$maladieId"));
       if (response.statusCode == 200) {
         setState(() {
-          methodeList = List<Map<String, dynamic>>.from(json.decode(response.body));
+          methodeList = List<Map<String, dynamic>>.from(jsonDecode(utf8.decode(response.bodyBytes)));
           mapResponse = methodeList[index];
           isExpandedList = List.generate(methodeList.length, (index) => false);
           isLoading = false;

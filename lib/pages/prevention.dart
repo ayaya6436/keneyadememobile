@@ -26,7 +26,7 @@ class PreventionState extends State<Prevention> {
       if (response.statusCode == 200) {
         setState(() {
           isLoading=false;
-          maladiesList = List<Map<String, dynamic>>.from(json.decode(response.body));
+          maladiesList = List<Map<String, dynamic>>.from(jsonDecode(utf8.decode(response.bodyBytes)));
           filteredMaladiesList = List<Map<String, dynamic>>.from(maladiesList);
           // Mettez à jour la liste des routes avec les instances de MethodePrevention
           listRoute = maladiesList.map((maladie) {

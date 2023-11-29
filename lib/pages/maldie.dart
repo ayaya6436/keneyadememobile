@@ -52,7 +52,7 @@ class MaladieState extends State<Maladie> {
       if (response.statusCode == 200) {
         print(response.toString());
         setState(() {
-          maladiesList = List<Map<String, dynamic>>.from(json.decode(response.body));
+          maladiesList = List<Map<String, dynamic>>.from(jsonDecode(utf8.decode(response.bodyBytes)));
           mapResponse = maladiesList[index];
           isExpandedList = List.generate(maladiesList.length, (index) => false);
           filteredMaladiesList = List<Map<String, dynamic>>.from(maladiesList);

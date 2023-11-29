@@ -39,7 +39,7 @@ class AnnonceState extends State<Annonce> {
     await http.get(Uri.parse("http://10.0.2.2:8080/keneya/annonces"));
 
     if (response.statusCode == 200) {
-      final List<dynamic> jsonResponse = json.decode(response.body);
+      final List<dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
       List<Video> fetchedVideos = jsonResponse.map((data) {
         return Video(titre: data['titre'],
