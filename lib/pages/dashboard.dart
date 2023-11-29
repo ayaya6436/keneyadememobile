@@ -33,7 +33,7 @@ class _DashboardState extends State<Dashboard> {
      "assets/images/calendrier.png",
      "assets/images/megaphone.png",
      "assets/images/zoneDanger.png",
-     "assets/images/forum.png",
+     // "assets/images/forum.png",
    ];
 
 
@@ -46,7 +46,7 @@ class _DashboardState extends State<Dashboard> {
      "Calendrier",
      "Annonces",
      "Signaler Cas",
-     "Forum",
+     // "Forum",
    ];
 
 
