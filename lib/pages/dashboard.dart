@@ -46,7 +46,7 @@ class _DashboardState extends State<Dashboard> {
      "Calendrier",
      "Annonces",
      "Signaler Cas",
-     // "Forum",
+     // "Guide",
    ];
 
 
